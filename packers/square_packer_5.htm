@@ -1,0 +1,117 @@
+﻿<html>  
+   <head>
+      <title>Circle Packing</title>  
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+       <script type="application/javascript">
+
+           var maxRadius = 50;
+           var maxX = 700;
+           var maxY = 700;
+           var pointsPerCircle = 400;
+           var attemptsPerCircle = 100;
+           var maxNumberOfCircles = 3000;
+           var timeoutTime = 5;
+
+           var circles = new Array();
+           function tryToAddCircle() {
+               var largestRadius = 0;
+               var bestX = 0;
+               var bestY = 0;
+               for (var j = 0; j < attemptsPerCircle; j++) {
+                   radius = Math.random() * maxRadius; // radius
+                   x = Math.random() * maxX; // x
+                   y = Math.random() * maxY; // y
+                   circle = [radius, x, y];
+                   if (!intersectsExistingCircle(circle)) {
+                       if (radius > largestRadius) {
+                           largestRadius = radius;
+                           bestX = x;
+                           bestY = y;
+                       }
+                       // alert(largestRadius);
+                   }
+               }
+               if (largestRadius > 0) {
+                   //alert("pushing");
+                   circles.push([largestRadius, bestX, bestY]);
+               }
+           }
+           
+           function intersect(circle, otherCircle) {
+               var distanceBetweenCentres =
+                   Math.pow(Math.pow(Math.abs(circle[1] - otherCircle[1]), 1) +
+                   Math.pow(Math.abs(circle[2] - otherCircle[2]), 1), 1 / 1)
+               ;
+               return circle[0] + otherCircle[0] > distanceBetweenCentres;
+           }
+
+           function intersectsExistingCircle(circle) {
+               for (var i = 0; i < circles.length; i++) 
+                   if (intersect(circle, circles[i]))
+                       return true;
+               return false;
+           }
+
+           function drawLnCircle(ctx, x1, y1, radius, pointSize, numberOfPoints, pow) {
+               for (var r = 0; r <= radius; r++) {
+                   for (var i = 0; i <= numberOfPoints; i++) {
+                       var X = x1 + r * Math.pow(Math.abs(Math.sin((i / numberOfPoints) * Math.PI / 2)), pow);
+                       var Y = y1 + r * Math.pow(Math.abs(Math.cos((i / numberOfPoints) * Math.PI / 2)), pow);
+                       ctx.fillRect(X, Y, pointSize, pointSize);
+                       var X = x1 - r * Math.pow(Math.abs(Math.sin((i / numberOfPoints) * Math.PI / 2)), pow);
+                       var Y = y1 + r * Math.pow(Math.abs(Math.cos((i / numberOfPoints) * Math.PI / 2)), pow);
+                       ctx.fillRect(X, Y, pointSize, pointSize);
+                       var X = x1 + r * Math.pow(Math.abs(Math.sin((i / numberOfPoints) * Math.PI / 2)), pow);
+                       var Y = y1 - r * Math.pow(Math.abs(Math.cos((i / numberOfPoints) * Math.PI / 2)), pow);
+                       ctx.fillRect(X, Y, pointSize, pointSize);
+                       var X = x1 - r * Math.pow(Math.abs(Math.sin((i / numberOfPoints) * Math.PI / 2)), pow);
+                       var Y = y1 - r * Math.pow(Math.abs(Math.cos((i / numberOfPoints) * Math.PI / 2)), pow);
+                       ctx.fillRect(X, Y, pointSize, pointSize);
+                   }
+               }
+           }
+
+           function drawLine(ctx, x1, y1, x2, y2, pointSize, numberOfPoints) {
+               for (var i = 0; i <= numberOfPoints; i++) {
+                   var X = i / numberOfPoints * (x2 - x1) + x1;
+                   var Y = i / numberOfPoints * (y2 - y1) + y1;
+                   var intensity = Math.floor((32 - X) * 7);
+                   ctx.fillRect(X, Y, pointSize, pointSize);
+               }
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               var ctx = canvas.getContext('2d');
+               var circle = circles[circles.length - 1];
+               var red = Math.floor(Math.random() * 255);
+               var green = Math.floor(Math.random() * 255);
+               var blue = Math.floor(Math.random() * 255);
+               ctx.fillStyle = "rgba(" + red + "," + green + "," + blue + ",0.05)";
+               drawLnCircle(ctx, circle[1], circle[2], circle[0], 1, pointsPerCircle, 2);
+
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               tryToAddCircle();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		    
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="700" height="700"></canvas>  
+	        </div>
+	        <div id="footer">
+	        </div>
+        </div>
+     </body>  
+ </html>   

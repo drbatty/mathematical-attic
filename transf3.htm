@@ -1,0 +1,235 @@
+﻿<html>  
+   <head>
+      <title>Möbius Transformation of an Animated Hypersphere</title>  
+      <script language="javascript" src="complexNumber.js"></script>
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+      <script type="application/javascript">
+
+          var points = new Array();
+          var timeoutTime = 20;
+          var rotation = Math.PI / 100;
+          var a = new complexNumber(1, 0);
+          var b = new complexNumber(0.01, 0);
+          var c = new complexNumber(-0.01, 0);
+          var d = new complexNumber(1, 0);
+          var scale = 60;
+          var radius = 13;
+
+          var circlePoints = 100;
+          var greatCircles = new Array();
+          var abAngle = Math.PI / 200;
+          var cdAngle = Math.PI / 133;
+
+          var T1a = Math.cos(abAngle);
+          var T1b = -1 * Math.sin(abAngle);
+          var T1c = 0;
+          var T1d = 0;
+
+          var T2a = Math.sin(abAngle);
+          var T2b = Math.cos(abAngle);
+          var T2c = 0;
+          var T2d = 0;
+
+          var T3a = 0;
+          var T3b = 0;
+          var T3c = Math.cos(cdAngle);
+          var T3d = -1 * Math.sin(cdAngle);
+
+          var T4a = 0;
+          var T4b = 0;
+          var T4c = Math.sin(cdAngle);
+          var T4d = Math.cos(cdAngle);
+
+          for (var i = 0; i < circlePoints; i++) {
+              var a1 = radius * Math.sin(2 * Math.PI * i / circlePoints);
+              var b1 = radius * Math.cos(2 * Math.PI * i / circlePoints);
+
+              var point1 = {};
+              point1["a"] = a1;
+              point1["b"] = b1;
+              point1["c"] = 0;
+              point1["d"] = 0;
+
+              var point2 = {};
+              point2["a"] = a1;
+              point2["b"] = 0;
+              point2["c"] = b1;
+              point2["d"] = 0;
+
+              var point3 = {};
+              point3["a"] = a1;
+              point3["b"] = 0;
+              point3["c"] = 0;
+              point3["d"] = b1;
+
+              var point4 = {};
+              point4["a"] = 0;
+              point4["b"] = a1;
+              point4["c"] = b1;
+              point4["d"] = 0;
+
+              var point5 = {};
+              point5["a"] = 0;
+              point5["b"] = a1;
+              point5["c"] = 0;
+              point5["d"] = b1;
+
+              var point6 = {};
+              point6["a"] = 0;
+              point6["b"] = 0;
+              point6["c"] = a1;
+              point6["d"] = b1;
+
+              greatCircles.push(point1);
+              greatCircles.push(point2);
+              greatCircles.push(point3);
+              greatCircles.push(point4);
+              greatCircles.push(point5);
+              greatCircles.push(point6);
+          }
+
+          function init() {
+              for (var i = 0; i <= 60; i++) {
+                  for (var j = 0; j <= 60; j++) {
+                      var point = {};
+                      point["x"] = [(i - 30) / 60];
+                      point["y"] = [(j - 30) / 60];
+                      point["r"] = 255;
+                      point["g"] = 255;
+                      point["b"] = 255;
+                      points.push(point);
+                  }
+              }
+          }
+
+          function copySmallCanvas() {
+              var imageCanvas = document.getElementById("poincare-canvas");
+              if (imageCanvas.getContext) {
+                  var context = imageCanvas.getContext("2d");
+                  var pixels = context.getImageData(0, 0, 61, 61);
+                  for (var i = 0; i <= 60; i++) {
+                      for (var j = 0; j <= 60; j++) {
+                          var index = (i + j * 61) * 4;
+                          var point = points[j + i * 61];
+                          point["r"] = pixels.data[index];
+                          point["g"] = pixels.data[index + 1];
+                          point["b"] = pixels.data[index + 2];
+                      }
+                  }
+              }
+          }
+
+          function plot2d(x, y, ctx) {
+              ctx.beginPath();
+              ctx.moveTo(x, y);
+              ctx.fillRect(x, y, 1, 1);
+              ctx.stroke();
+          }
+
+          function plot4d(a, b, c, d, ctx) {
+              var X = 30 + b * Math.SQRT2 + c + d * Math.SQRT2;
+              var Y = 30 - a - b * Math.SQRT2 + d * Math.SQRT2;
+              plot2d(X, Y, ctx);
+          }
+
+          function transform() {
+              result = new Array();
+              for (var i = 0; i < points.length; i++) {
+                  var point = points[i];
+                  var z = new complexNumber(point["x"], point["y"]);
+                  var wNum = a.multiply(z).add(b);
+                  var wDen = c.multiply(z).add(d);
+                  var newPoint = {};
+                  w = wNum.divide(wDen);
+                  newPoint["x"] = w.x;
+                  newPoint["y"] = w.y;
+                  newPoint["r"] = point["r"];
+                  newPoint["g"] = point["g"];
+                  newPoint["b"] = point["b"];
+                  result.push(newPoint);
+              }
+              points = result;
+              var newGreatCircles = new Array();
+              for (var i = 0; i < greatCircles.length; i++) {
+                  var point = greatCircles[i];
+                  var newPoint = {};
+                  newPoint["a"] = T1a * point["a"] + T1b * point["b"] + T1c * point["c"] + T1d * point["d"];
+                  newPoint["b"] = T2a * point["a"] + T2b * point["b"] + T2c * point["c"] + T2d * point["d"];
+                  newPoint["c"] = T3a * point["a"] + T3b * point["b"] + T3c * point["c"] + T3d * point["d"];
+                  newPoint["d"] = T4a * point["a"] + T4b * point["b"] + T4c * point["c"] + T4d * point["d"];
+                  newGreatCircles.push(newPoint);
+              }
+              greatCircles = newGreatCircles;
+              copySmallCanvas();
+          }
+
+          function toHex(number) {
+              result = number.toString(16);
+              if (result.length == 1)
+                  result = "0" + result;
+              return result;
+          }
+
+          function draw() {
+              var canvas = document.getElementById("canvas");
+              if (canvas.getContext) {
+                  var ctx = canvas.getContext("2d");
+                  ctx.fillStyle = "#000";
+                  ctx.fillRect(0, 0, 500, 500);
+                  for (var i = 0; i < points.length; i++) {
+                      var point = points[i];
+                      var colour = "#" + toHex(point["r"]) + toHex(point["g"]) + toHex(point["b"]);
+                      plot(point["x"], point["y"], colour, ctx);
+                  }
+              }
+              var poincareCanvas = document.getElementById("poincare-canvas");
+              if (poincareCanvas.getContext) {
+                  var poincareCtx = poincareCanvas.getContext("2d");
+                  poincareCtx.fillStyle = "#000";
+                  poincareCtx.fillRect(0, 0, 61, 61);
+                  poincareCtx.fillStyle = "#0F0";
+                  for (var i = 0; i < greatCircles.length; i++) {
+                      var point = greatCircles[i];
+                      plot4d(point["a"], point["b"], point["c"], point["d"], poincareCtx);
+                  }
+              }
+              else
+                  alert("a");
+          }
+
+          function plot(x, y, colour, ctx) {
+              ctx.beginPath();
+              ctx.moveTo(scale * x + 250, scale * y + 250);
+              ctx.fillStyle = colour;
+              ctx.fillRect(scale * x + 250, scale * y + 250, 4, 4);
+              ctx.stroke();
+          }
+
+          window.setTimeout(tick, timeoutTime);
+
+          function tick() {
+              if (points.length == 61 * 61) {
+                  transform();
+                  draw();
+              }
+              window.setTimeout(tick, timeoutTime);
+          }
+      </script>  
+     </head>  
+     <body onload="init();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>Möbius Transformation of an Animated Hypersphere</h1>
+	        </div>
+	        <div id="centred-canvas">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <div id="image-canvas">
+                <canvas id="poincare-canvas" width="61" height="61"></canvas>
+            </div>
+            <div id="footer">
+		       © Michael Batty, July 2012
+	        </div>
+        </div>
+     </body>  
+ </html>  

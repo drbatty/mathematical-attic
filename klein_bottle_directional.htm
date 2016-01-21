@@ -1,0 +1,70 @@
+﻿<html>  
+   <head>
+      <title>Fibreplot Klein Bottle</title>  
+      <link rel="stylesheet" type="text/css" href="interactive_geometry.css" />
+      <script language="javascript" src="manifolder/parametrizedKleinBottle.js"></script>
+      <script language="javascript" src="manifolder/pointManifold.js"></script>
+      <script language="javascript" src="manifolder/fourDimensionalRotation.js"></script>
+      <script language="javascript" src="manifolder/plotter.js"></script>
+       <script type="application/javascript">
+
+           var abAngle = Math.PI / 100;
+           var cdAngle = Math.PI / 200;
+           var twopi = 2 * Math.PI;
+           var timeoutTime = 20;
+           var radius = 90;
+           var pointSize = 2;
+           var numberOfPoints = 600;
+           var clearScreen = true;
+           var drawn = false;
+           var interleave = false;
+           var discreteLight = false;
+
+           var s3 = new parametrizedKleinBottle();
+           var s3Points = new pointManifold(numberOfPoints);
+           var transf = new fourDimensionalRotation(abAngle, cdAngle, interleave);
+           var s3Plotter = new plotter(pointSize, discreteLight, 0.5);
+           s3Points.createSpiralSurface(1, 77, twopi, parametrizedKleinBottle.point);
+
+           function transform() {
+               s3Points.points = transf.transformManifold(s3Points);
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               s3Plotter.draw4dDirectional(document.getElementById("canvas"), s3Points);
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="s3Plotter.draw4d(document.getElementById('canvas'), s3Points);">  
+        <div id="header">
+	    <h1>Fibreplot Klein Bottle</h1>
+	</div>
+	<div id="content-container1">
+		<div id="content-container2">
+			<div id="section-navigation">
+				
+			</div>
+			<div id="content">
+				<div id="canvas-container">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	            </div>
+				<p>
+            A Klein Bottle "fibreplotted" where the vector represents the four-dimensional information lost by isometric projection to two dimensions (a whole plane for every point).
+            Glimmers of 4D vision? I think that the vectors make a big difference with this one!
+            </p>
+			</div>
+			<div id="aside">
+				
+			</div>
+			<div id="footer">
+				© Michael Batty, July 2012
+			</div>
+		</div>
+	</div>
+     </body>  
+ </html>   

@@ -1,0 +1,127 @@
+﻿
+<html>  
+   <head>
+      <title>A Flat Klein Bottle</title>  
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+       <script type="application/javascript">
+
+           var numberOfPoints = 2000;
+           var spherePoints = new Array();
+           var abAngle = Math.PI / 100;
+           var cdAngle = Math.PI / 200;
+           var cos30 = Math.cos(Math.PI / 6);
+           var sin30 = Math.sin(Math.PI / 6);
+           var radius = 40;
+
+           var timeoutTime = 20;
+
+           var T1a = Math.cos(abAngle);
+           var T1b = -1 * Math.sin(abAngle);
+           var T1c = 0;
+           var T1d = 0;
+
+           var T2a = Math.sin(abAngle);
+           var T2b = Math.cos(abAngle);
+           var T2c = 0;
+           var T2d = 0;
+
+           var T3a = 0;
+           var T3b = 0;
+           var T3c = Math.cos(cdAngle);
+           var T3d = -1 * Math.sin(cdAngle);
+
+           var T4a = 0;
+           var T4b = 0;
+           var T4c = Math.sin(cdAngle);
+           var T4d = Math.cos(cdAngle);
+
+           for (var i = 0; i < numberOfPoints; i++) {
+               var theta = Math.random() * 2 * Math.PI;
+               var phi = Math.random() * 2 * Math.PI;
+               var point = {};
+               point["a"] = radius * Math.cos(theta) * Math.cos(phi);
+               point["b"] = radius * Math.sin(theta) * Math.cos(phi);
+               point["c"] = radius * 2 * Math.cos(theta/2) * Math.sin(phi);
+               point["d"] = radius * 2 * Math.sin(theta/2) * Math.sin(phi);
+               spherePoints.push(point);
+           }
+
+           function transform() {
+               var newSpherePoints = new Array();
+               for (var i = 0; i < spherePoints.length; i++) {
+                   var point = spherePoints[i];
+                   var newPoint = {};
+                   newPoint["a"] = T1a * point["a"] + T1b * point["b"] + T1c * point["c"] + T1d * point["d"];
+                   newPoint["b"] = T2a * point["a"] + T2b * point["b"] + T2c * point["c"] + T2d * point["d"];
+                   newPoint["c"] = T3a * point["a"] + T3b * point["b"] + T3c * point["c"] + T3d * point["d"];
+                   newPoint["d"] = T4a * point["a"] + T4b * point["b"] + T4c * point["c"] + T4d * point["d"];
+                   newSpherePoints.push(newPoint);
+               }
+               spherePoints = newSpherePoints;
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               if (canvas.getContext) {
+                   var ctx = canvas.getContext("2d");
+                   ctx.fillStyle = "#000";
+                   ctx.fillRect(0, 0, 500, 500);
+                   ctx.fillStyle = "#FFF";
+                   for (var i = 0; i < spherePoints.length; i++) {
+                       var point = spherePoints[i];
+                       plot4d(point["a"], point["b"], point["c"], point["d"], ctx);
+                   }
+                   //alert(spherePoints.length);
+               }
+               else
+                   alert("a");
+           }
+
+           function plot(x, y, ctx) {
+               ctx.beginPath();
+               ctx.moveTo(x, y);
+               ctx.fillRect(x, y, 2, 2);
+               ctx.stroke();
+           }
+
+           function plot4d(a, b, c, d, ctx) {
+               var X = 250 + b * Math.SQRT2 + c + d * Math.SQRT2;
+               var Y = 250 - a - b * Math.SQRT2 + d * Math.SQRT2;
+               var red = "4";
+               if (a > 0)
+                   red = "F";
+               var green = "4";
+               if (c > 0)
+                   green = "F";
+               ctx.fillStyle = "#" + red + green + "0";
+               plot(X, Y, ctx);
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>A Flat Klein Bottle</h1>
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p>
+            A Klein Bottle is a non-orientable surface which does not embed (without self intersections) in three dimensions but, like
+            the torus, embeds flatly in ℝ⁴.
+            </p>
+	        <div id="footer">
+		       © Michael Batty, July 2012
+	        </div>
+        </div>
+     </body>  
+ </html>   

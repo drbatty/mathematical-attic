@@ -1,0 +1,196 @@
+﻿<html>  
+   <head>
+      <title>A Tesseract 2-Skeleton</title>  
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+      <script language="javascript" src="manifolder/fourDimensionalRotation.js"></script>
+       <script type="application/javascript">
+
+           var abAngle = Math.PI / 100;
+           var cdAngle = Math.PI / 200;
+           var timeoutTime = 20;
+           var scale = 50;
+           var interleave = false;
+
+           var transf = new fourDimensionalRotation(abAngle, cdAngle, interleave);
+
+           var polygons = new Array();
+           for (var fh1 = -scale; fh1 <= scale; fh1 += 2*scale) {
+               for (var fh2 = -scale; fh2 <= scale; fh2 += 2*scale) {
+                   var polygon = getSquare("a", "b", "c", "d", fh1, fh2);
+                   var polygon2 = getSquare("b", "c", "a", "d", fh1, fh2);
+                   var polygon3 = getSquare("c", "d", "a", "b", fh1, fh2);
+                   var polygon4 = getSquare("d", "a", "b", "c", fh1, fh2);
+                   var polygon5 = getSquare("a", "c", "b", "d", fh1, fh2);
+                   var polygon6 = getSquare("b", "d", "a", "c", fh1, fh2);
+                   polygons.push(polygon);
+                   polygons.push(polygon2);
+                   polygons.push(polygon3);
+                   polygons.push(polygon4);
+                   polygons.push(polygon5);
+                   polygons.push(polygon6);
+               }
+           }
+
+           function getSquare(freeDir1, freeDir2, fixedDir1, fixedDir2, fixed1, fixed2) {
+               var polygon = new Array();
+               var point1 = {};
+               point1[freeDir1] = -scale;
+               point1[freeDir2] = -scale;
+               point1[fixedDir1] = fixed1;
+               point1[fixedDir2] = fixed2;
+
+               var point2 = {};
+               point2[freeDir1] = scale;
+               point2[freeDir2] = -scale;
+               point2[fixedDir1] = fixed1;
+               point2[fixedDir2] = fixed2;
+
+               var point3 = {};
+               point3[freeDir1] = scale;
+               point3[freeDir2] = scale;
+               point3[fixedDir1] = fixed1;
+               point3[fixedDir2] = fixed2;
+
+               var point4 = {};
+               point4[freeDir1] = -scale;
+               point4[freeDir2] = scale;
+               point4[fixedDir1] = fixed1;
+               point4[fixedDir2] = fixed2;
+
+               polygon.push(point1);
+               polygon.push(point2);
+               polygon.push(point3);
+               polygon.push(point4);
+               return polygon;
+           }
+
+
+           function transform() {
+               var newPolygons = new Array();
+               for (var i = 0; i < polygons.length; i++) {
+                   var polygon = polygons[i];
+                   var newPolygon = new Array();
+                   for(var j=0; j< polygon.length; j++){
+                       var newPoint = transf.transform(polygon[j]);
+                       newPolygon.push(newPoint);
+                   }
+                   newPolygons.push(newPolygon);
+               }
+               polygons = newPolygons;
+           }
+
+           function clear(ctx) {
+               ctx.fillStyle = "#000";
+               ctx.fillRect(0, 0, 500, 500);
+           }
+
+           function drawPolygon(polygon, ctx) {
+               if (polygon.length == 4) {
+                   var point1 = polygon[0];
+                   var point2 = polygon[1];
+                   var point3 = polygon[2];
+                   var point4 = polygon[3];
+                   var proj1 = projection(point1["a"], point1["b"], point1["c"], point1["d"]);
+                   var proj2 = projection(point2["a"], point2["b"], point2["c"], point2["d"]);
+                   var proj3 = projection(point3["a"], point3["b"], point3["c"], point3["d"]);
+                   var proj4 = projection(point4["a"], point4["b"], point4["c"], point4["d"]);
+                   var x1 = proj1["X"];
+                   var x2 = proj2["X"];
+                   var x3 = proj3["X"];
+                   var x4 = proj4["X"];
+                   var y1 = proj1["Y"];
+                   var y2 = proj2["Y"];
+                   var y3 = proj3["Y"];
+                   var y4 = proj4["Y"];
+                   ctx.fillStyle = "rgba("+Math.floor(x1)+","+Math.floor(x2)+","+Math.floor(x3)+",0.1)";
+                   drawQuadrilateral(ctx, x1, y1, x2, y2, x3, y3, x4, y4, 4, 1000);
+               }
+               /*for (var i = 0; i < polygon.length; i++) {
+                   var point = polygon[i];
+                   var proj = projection(point["a"], point["b"], point["c"], point["d"]);
+                   var x1 = proj["X"];
+                   var y1 = proj["Y"];
+                   if (i < polygon.length - 1)
+                       secondPoint = polygon[i + 1];
+                   else
+                       secondPoint = polygon[0];
+                   var proj2 = projection(secondPoint["a"], secondPoint["b"], secondPoint["c"], secondPoint["d"]);
+                   var x2 = proj2["X"];
+                   var y2 = proj2["Y"];
+                   drawLine(ctx, x1, y1, x2, y2, 2, 30);
+               }*/
+           }
+
+           function drawLine(ctx, x1, y1, x2, y2, pointSize, numberOfPoints) {
+               for (var i = 0; i <= numberOfPoints; i++) {
+                   var X = i / numberOfPoints * (x2 - x1) + x1;
+                   var Y = i / numberOfPoints * (y2 - y1) + y1;
+                   ctx.fillRect(X, Y, pointSize, pointSize);
+               }
+           }
+
+           function drawQuadrilateral(ctx, x1, y1, x2, y2, x3, y3, x4, y4, pointSize, numberOfPoints) {
+               var sqrtPoints = Math.sqrt(numberOfPoints);
+               for (var i = 0; i <= sqrtPoints; i++) {
+                   for (var j = 0; j < sqrtPoints; j++) {
+                       var X1 = i / sqrtPoints * (x3 - x2) + x2;
+                       var X2 = i / sqrtPoints * (x4 - x1) + x1;
+                       var Y1 = i / sqrtPoints * (y3 - y2) + y2;
+                       var Y2 = i / sqrtPoints * (y4 - y1) + y1;
+                       var X = j / sqrtPoints * (X2 - X1) + X1;
+                       var Y = j / sqrtPoints * (Y2 - Y1) + Y1;
+                       ctx.fillRect(X, Y, pointSize, pointSize);
+                   }
+               }
+           }
+                    
+               
+           
+
+           function projection(a, b, c, d) {
+               var result = {};
+               result["X"] = 250 + b * 1/Math.SQRT2 + c + d * 1/Math.SQRT2;
+               result["Y"] = 250 - a - b * 1/Math.SQRT2 + d * 1/Math.SQRT2;
+               return result;
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               var ctx = canvas.getContext('2d');
+               clear(ctx);
+               //ctx.fillStyle = "rgba(255,255,255,0.1)";
+               for (var j = 0; j < polygons.length; j++) {
+                   drawPolygon(polygons[j], ctx);
+               }
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>A Tesseract 2-Skeleton</h1>
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p> This is a 4-dimensional cube, sometimes called a hypercube, or tesseract. A cube has 8 vertices, 12 edges and 6 squares whereas a 
+            tesseract has 16 vertices, 32 edges, 24 squares and 8 cubes. Another name for it is an octochoron, which is analogous to the name "hexahedron" for a cube, 
+            and means "having 8 cells". 
+              More specifically, you are looking at the 2-skeleton of the tesseract, i.e. its 24 squares, as this animation is made of pixel-shaded squares, with alpha-blended colours. 
+          
+            </p>
+	        <div id="footer">
+		       © Michael Batty, July 2012
+	        </div>
+        </div>
+     </body>  
+ </html>   

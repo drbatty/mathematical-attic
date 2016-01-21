@@ -1,0 +1,70 @@
+﻿<html>  
+   <head>
+      <title>Hyperspherical Spirals</title>  
+      <link rel="stylesheet" type="text/css" href="interactive_geometry.css" />
+      <script language="javascript" src="manifolder/parametrizedS3.js"></script>
+      <script language="javascript" src="manifolder/pointManifold.js"></script>
+      <script language="javascript" src="manifolder/fourDimensionalRotation.js"></script>
+      <script language="javascript" src="manifolder/plotter.js"></script>
+       <script type="application/javascript">
+
+           var abAngle = Math.PI / 100;
+           var cdAngle = Math.PI / 200;
+           var twopi = 2 * Math.PI;
+           var timeoutTime = 30;
+           var radius = 160;
+           var pointSize = 3;
+           var numberOfPoints = 2200;
+           var clearScreen = true;
+           var drawn = false;
+           var interleave = false;
+           var discreteLight = false;
+
+           var s3 = new parametrizedS3();
+           var s3Points = new pointManifold(numberOfPoints);
+           var transf = new fourDimensionalRotation(abAngle, cdAngle, interleave);
+           var s3Plotter = new plotter(pointSize, discreteLight, 0.5);
+           s3Points.createSpiral3Manifold(1, 7, 77, twopi, parametrizedS3.point);
+
+           function transform() {
+               s3Points.points = transf.transformManifold(s3Points);
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               s3Plotter.draw4d(document.getElementById("canvas"), s3Points);
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="s3Plotter.draw4d(document.getElementById('canvas'), s3Points);">  
+        <div id="header">
+	    <h1>Hyperspherical Spirals</h1>
+	</div>
+	<div id="content-container1">
+		<div id="content-container2">
+			<div id="section-navigation">
+				
+			</div>
+			<div id="content">
+				<div id="canvas-container">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	            </div>
+				<p>
+                This is the analogue of the <a href="bauble.htm">Christmas tree bauble</a>, but on a hypersphere. It's
+                a bit like peeling a 3-orange.
+            </p>
+			</div>
+			<div id="aside">
+				
+			</div>
+			<div id="footer">
+				© Michael Batty, July 2012
+			</div>
+		</div>
+	</div>
+     </body>  
+ </html>   

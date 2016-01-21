@@ -1,0 +1,97 @@
+﻿<html>  
+   <head>
+      <title>A 31-41 Torus Knot Rotating in 4D</title>  
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+       <script language="javascript" src="manifolder/fourDimensionalRotation.js"></script>
+       <script language="javascript" src="manifolder/parametrizedTorusKnot.js"></script>
+       <script language="javascript" src="manifolder/pointManifold.js"></script>
+       <script language="javascript" src="manifolder/plotter.js"></script>
+       <script type="application/javascript">
+           var numberOfPoints = 1000;
+           var greatCircles = new Array();
+           var abAngle = Math.PI / 300;
+           var cdAngle = Math.PI/ 200;
+           var cos30 = Math.cos(Math.PI / 6);
+           var sin30 = Math.sin(Math.PI / 6);
+           var scale = 40;
+           var timeoutTime = 20;
+           var windingNumber1 = 41;
+           var windingNumber2 = 31;
+           var innerRadius = 3;
+           var outerRadius = 1;
+           var transf = new fourDimensionalRotation(abAngle, cdAngle, true);
+           var transf2 = new fourDimensionalRotation(abAngle, cdAngle, false);
+           var torusKnot = new parametrizedTorusKnot(windingNumber1, windingNumber2, innerRadius, outerRadius, scale);
+           var knotPoints = new pointManifold(numberOfPoints);
+           var twopi = 2 * Math.PI;
+           var discreteLight = false;
+           var pointSize = 4;
+           var alpha = 1;
+           var clearScreen = true;
+           var drawn = false;
+
+           var knotPlotter = new plotter(pointSize, discreteLight, alpha);
+
+           knotPoints.createRegularCurve(0, twopi, parametrizedTorusKnot.prototype.point);
+
+           function transform() {
+               var newPoints = new Array();
+               for (var i = 0; i < knotPoints.points.length; i++) {
+                   var point = knotPoints.points[i];
+                   var newPoint = transf.transform(transf2.transform(point));
+                   newPoints.push(newPoint);
+               }
+               knotPoints.points = newPoints;
+           }
+
+           function clear(ctx) {
+               ctx.fillStyle = "#000";
+               ctx.fillRect(0, 0, 500, 500);
+           }
+
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               if (canvas.getContext) {
+                   var ctx = canvas.getContext("2d");
+                   if (clearScreen || !drawn) {
+                       clear(ctx);
+                       drawn = true;
+                   }
+                   knotPlotter.plot4DManifold(knotPoints, ctx);
+               }
+               else
+                   alert("a");
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>A 31-41 Torus Knot Rotating in 4D</h1>
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p> 
+                A torus can be made by identifying sides of a square. If you take a line on the square which is such an angle to the x-axis
+                that it meets itself again after travelling <em>n</em> times in the <em>x</em> direction and <em>m</em> times in the <em>y</em>
+                direction it projects to a knot on the surface of the torus. That is, if you then removed all of the torus but the knot, the result
+                would be a knotted circle. This is called the <em>(n,m)</em>-torus knot and the animation shows the (31,41)-knot. It's
+                interesting that a surface is traced out with only one parameter, and I will also look at doing this for other surfaces.
+            </p>
+	        <div id="footer">
+		        M. Batty, July 2012, TH_NK Technical Sessions
+	        </div>
+        </div>
+     </body>  
+ </html>   

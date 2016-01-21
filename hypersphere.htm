@@ -1,0 +1,148 @@
+﻿<html>  
+   <head>
+      <title>S³: The Hypersphere</title>  
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+      <script type="application/javascript">
+          var circlePoints = 50;
+          var greatCircles = new Array();
+          var abAngle = Math.PI / 700;
+          var cdAngle = Math.PI / 300;
+          var timeoutTime = 20;
+
+          var T1a = Math.cos(abAngle);
+          var T1b = -1 * Math.sin(abAngle);
+          var T1c = 0;
+          var T1d = 0;
+
+          var T2a = Math.sin(abAngle);
+          var T2b = Math.cos(abAngle);
+          var T2c = 0;
+          var T2d = 0;
+
+          var T3a = 0;
+          var T3b = 0;
+          var T3c = Math.cos(cdAngle);
+          var T3d = -1 * Math.sin(cdAngle);
+
+          var T4a = 0;
+          var T4b = 0;
+          var T4c = Math.sin(cdAngle);
+          var T4d = Math.cos(cdAngle);
+
+          for (var i = 0; i < circlePoints; i++) {
+              var a = 100 * Math.sin(2 * Math.PI * i / circlePoints);
+              var b = 100 * Math.cos(2 * Math.PI * i / circlePoints);
+
+              var point1 = {};
+              point1["a"] = a;
+              point1["b"] = b;
+              point1["c"] = 0;
+              point1["d"] = 0;
+
+              var point2 = {};
+              point2["a"] = a;
+              point2["b"] = 0;
+              point2["c"] = b;
+              point2["d"] = 0;
+
+              var point3 = {};
+              point3["a"] = a;
+              point3["b"] = 0;
+              point3["c"] = 0;
+              point3["d"] = b;
+
+              var point4 = {};
+              point4["a"] = 0;
+              point4["b"] = a;
+              point4["c"] = b;
+              point4["d"] = 0;
+
+              var point5 = {};
+              point5["a"] = 0;
+              point5["b"] = a;
+              point5["c"] = 0;
+              point5["d"] = b;
+
+              var point6 = {};
+              point6["a"] = 0;
+              point6["b"] = 0;
+              point6["c"] = a;
+              point6["d"] = b;
+
+              greatCircles.push(point1);
+              greatCircles.push(point2);
+              greatCircles.push(point3);
+              greatCircles.push(point4);
+              greatCircles.push(point5);
+              greatCircles.push(point6);
+          }
+          function transform() {
+              var newGreatCircles = new Array();
+              for (var i = 0; i < greatCircles.length; i++) {
+                  var point = greatCircles[i];
+                  var newPoint = {};
+                  newPoint["a"] = T1a * point["a"] + T1b * point["b"] + T1c * point["c"] + T1d * point["d"];
+                  newPoint["b"] = T2a * point["a"] + T2b * point["b"] + T2c * point["c"] + T2d * point["d"];
+                  newPoint["c"] = T3a * point["a"] + T3b * point["b"] + T3c * point["c"] + T3d * point["d"];
+                  newPoint["d"] = T4a * point["a"] + T4b * point["b"] + T4c * point["c"] + T4d * point["d"];
+                  newGreatCircles.push(newPoint);
+              }
+              greatCircles = newGreatCircles;
+          }
+
+          function draw() {
+              var canvas = document.getElementById("canvas");
+              if (canvas.getContext) {
+                  var ctx = canvas.getContext("2d");
+                  ctx.fillStyle = "#000";
+                  ctx.fillRect(0, 0, 500, 500);
+                  ctx.fillStyle = "#FFF";
+                  for (var i = 0; i < greatCircles.length; i++) {
+                      var point = greatCircles[i];
+                      plot4d(point["a"], point["b"], point["c"], point["d"], ctx);
+                  }
+              }
+              else
+                  alert("a");
+          }
+
+          function plot(x, y, ctx) {
+              ctx.beginPath();
+              ctx.moveTo(x, y);
+              ctx.fillRect(x,y,4,4); 
+              ctx.stroke();
+          }
+
+          function plot4d(a, b, c, d, ctx) {
+              var X = 250 + b * Math.SQRT2 + c + d * Math.SQRT2;
+              var Y = 250 - a - b * Math.SQRT2 + d * Math.SQRT2;
+              plot(X, Y, ctx);
+          }
+
+          window.setTimeout(tick, timeoutTime);
+
+          function tick() {
+              transform();
+              draw();
+              window.setTimeout(tick, timeoutTime);
+          }
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>S³: The Hypersphere</h1>
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p>
+            This is also produced using javascript and an HTML5 canvas. It contains 300 points. Every 20ms it updates by multiplying every point by the
+            same matrix, which rotates through an angle pair of (π/700, π/300).
+            </p>
+	        <div id="footer">
+		       © Michael Batty, July 2012
+	        </div>
+        </div>
+     </body>  
+ </html>  

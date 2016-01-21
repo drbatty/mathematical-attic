@@ -1,0 +1,67 @@
+﻿<html>  
+   <head>
+      <title>A Pretty Bauble</title>  
+      <link rel="stylesheet" type="text/css" href="interactive_geometry.css" />
+      <script language="javascript" src="manifolder/threeDimensionalRotation.js"></script>
+      <script language="javascript" src="manifolder/plotter.js"></script>
+      <script language="javascript" src="manifolder/pointManifold.js"></script>
+      <script language="javascript" src="manifolder/parametrizedS2.js"></script>
+       <script type="application/javascript">
+           var twopi = 2 * Math.PI;
+           var numberOfPoints = 4000;
+           var spherePoints = new Array();
+           var angle = Math.PI / 100;
+           var radius = 170;
+           var transf = new threeDimensionalRotation(angle);
+           var discreteLight = false;
+           var sPlotter = new plotter(1, discreteLight, 1);
+           sPlotter.refresh = true;
+           var s2 = new parametrizedS2(120);
+           var s2Points = new pointManifold(numberOfPoints);
+           s2Points.createSpiralSurface(4,17, twopi, parametrizedS2.point);
+
+           var timeoutTime = 30;
+
+           function transform() {
+               s2Points.points = transf.transformManifold(s2Points);
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               sPlotter.draw3d(document.getElementById("canvas"), s2Points);
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body>  
+          <div id="header">
+	    <h1>A Pretty Bauble</h1>
+	</div>
+	<div id="content-container1">
+		<div id="content-container2">
+			<div id="section-navigation">
+			</div>
+			<div id="content">
+				<div id="canvas-container">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	            </div>
+                <p> A sphere can be parametrized using <em> spherical polar coordinates </em>, where the sphere is swept out in three
+                dimensions by allowing two independent parameters θ and φ vary over a square of side 2π. If we pretend that the square is a torus
+                instead, we can project a curve on the torus to the sphere. If we take a line which projects to a <a href="rotating_torus_knot.htm">torus knot</a>, that
+                is, a line which wraps round the square <em>m</em> times in one direction and <em>n</em> times in the other (here <em>m</em>=4, <em>n</em>=17), we can project this line onto the sphere to obtain
+                "spherical spirals", which make
+                for some very pretty Christmas tree baubles!
+                </p>
+			</div>
+			<div id="aside">
+			</div>
+			<div id="footer">
+				© Michael Batty, July 2012
+			</div>
+		</div>
+	</div>
+     </body>  
+ </html>   

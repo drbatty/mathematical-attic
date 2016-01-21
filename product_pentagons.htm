@@ -1,0 +1,189 @@
+﻿<html>  
+   <head>
+      <title>The Product of Two Pentagons</title>  
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+      <script language="javascript" src="manifolder/fourDimensionalRotation.js"></script>
+       <script type="application/javascript">
+
+           var abAngle = Math.PI / 100;
+           var cdAngle = Math.PI / 200;
+           var timeoutTime = 20;
+           var scale = 100;
+           var interleave = false;
+
+           var transf = new fourDimensionalRotation(abAngle, cdAngle, interleave);
+           
+           var numberOfPoints = 5;
+           var planePoints = new Array();
+           for (var i = 0; i < numberOfPoints; i++) {
+               var point = {};
+               var theta = i * 2 * Math.PI / numberOfPoints;
+               point["x"] = scale * Math.cos(theta);
+               point["y"] = scale * Math.sin(theta);
+               planePoints.push(point);
+           }
+
+           var edges = new Array();
+           for (var i = 0; i < numberOfPoints - 1; i++) {
+               var edge = {}
+               edge["i"] = planePoints[i];
+               edge["t"] = planePoints[i + 1];
+               edges.push(edge);
+           }
+
+           var lastEdge = {}
+           lastEdge["i"] = planePoints[numberOfPoints - 1];
+           lastEdge["t"] = planePoints[0];
+           edges.push(lastEdge);
+
+           var polygons = new Array();
+           for (var k = 0; k < edges.length; k++) {
+               for (var m = 0; m < edges.length; m++) {
+                   polygon = new Array();
+                   var e1 = edges[k];
+                   var e2 = edges[m];
+                   var squarePoint1 = {};
+                   var squarePoint2 = {};
+                   var squarePoint3 = {};
+                   var squarePoint4 = {};
+
+                   squarePoint1["a"] = e1["i"]["x"];
+                   squarePoint1["b"] = e1["i"]["y"];
+                   squarePoint1["c"] = e2["i"]["x"];
+                   squarePoint1["d"] = e2["i"]["y"];
+
+                   squarePoint2["a"] = e1["t"]["x"];
+                   squarePoint2["b"] = e1["t"]["y"];
+                   squarePoint2["c"] = e2["i"]["x"];
+                   squarePoint2["d"] = e2["i"]["y"];
+
+                   squarePoint3["a"] = e1["t"]["x"];
+                   squarePoint3["b"] = e1["t"]["y"];
+                   squarePoint3["c"] = e2["t"]["x"];
+                   squarePoint3["d"] = e2["t"]["y"];
+
+                   squarePoint4["a"] = e1["i"]["x"];
+                   squarePoint4["b"] = e1["i"]["y"];
+                   squarePoint4["c"] = e2["t"]["x"];
+                   squarePoint4["d"] = e2["t"]["y"];
+
+                   polygon.push(squarePoint1);
+                   polygon.push(squarePoint2);
+                   polygon.push(squarePoint3);
+                   polygon.push(squarePoint4);
+                   polygons.push(polygon);
+               }
+           }
+
+
+           function transform() {
+               var newPolygons = new Array();
+               for (var i = 0; i < polygons.length; i++) {
+                   var polygon = polygons[i];
+                   var newPolygon = new Array();
+                   for(var j=0; j< polygon.length; j++){
+                       var newPoint = transf.transform(polygon[j]);
+                       newPolygon.push(newPoint);
+                   }
+                   newPolygons.push(newPolygon);
+               }
+               polygons = newPolygons;
+           }
+
+           function clear(ctx) {
+               ctx.fillStyle = "#000";
+               ctx.fillRect(0, 0, 500, 500);
+           }
+
+           function drawPolygon(polygon, ctx) {
+               if (polygon.length == 4) {
+                   var point1 = polygon[0];
+                   var point2 = polygon[1];
+                   var point3 = polygon[2];
+                   var point4 = polygon[3];
+                   var proj1 = projection(point1["a"], point1["b"], point1["c"], point1["d"]);
+                   var proj2 = projection(point2["a"], point2["b"], point2["c"], point2["d"]);
+                   var proj3 = projection(point3["a"], point3["b"], point3["c"], point3["d"]);
+                   var proj4 = projection(point4["a"], point4["b"], point4["c"], point4["d"]);
+                   var x1 = proj1["X"];
+                   var x2 = proj2["X"];
+                   var x3 = proj3["X"];
+                   var x4 = proj4["X"];
+                   var y1 = proj1["Y"];
+                   var y2 = proj2["Y"];
+                   var y3 = proj3["Y"];
+                   var y4 = proj4["Y"];
+                   ctx.fillStyle = "rgba("+Math.floor(x1)+","+Math.floor(x2)+","+Math.floor(x3)+",0.1)";
+                   drawQuadrilateral(ctx, x1, y1, x2, y2, x3, y3, x4, y4, 4, 1000);
+               }
+           }
+
+           function drawLine(ctx, x1, y1, x2, y2, pointSize, numberOfPoints) {
+               for (var i = 0; i <= numberOfPoints; i++) {
+                   var X = i / numberOfPoints * (x2 - x1) + x1;
+                   var Y = i / numberOfPoints * (y2 - y1) + y1;
+                   ctx.fillRect(X, Y, pointSize, pointSize);
+               }
+           }
+
+           function drawQuadrilateral(ctx, x1, y1, x2, y2, x3, y3, x4, y4, pointSize, numberOfPoints) {
+               var sqrtPoints = Math.sqrt(numberOfPoints);
+               for (var i = 0; i <= sqrtPoints; i++) {
+                   for (var j = 0; j < sqrtPoints; j++) {
+                       var X1 = i / sqrtPoints * (x3 - x2) + x2;
+                       var X2 = i / sqrtPoints * (x4 - x1) + x1;
+                       var Y1 = i / sqrtPoints * (y3 - y2) + y2;
+                       var Y2 = i / sqrtPoints * (y4 - y1) + y1;
+                       var X = j / sqrtPoints * (X2 - X1) + X1;
+                       var Y = j / sqrtPoints * (Y2 - Y1) + Y1;
+                       ctx.fillRect(X, Y, pointSize, pointSize);
+                   }
+               }
+           }
+                    
+               
+           
+
+           function projection(a, b, c, d) {
+               var result = {};
+               result["X"] = 250 + b * 1/Math.SQRT2 + c + d * 1/Math.SQRT2;
+               result["Y"] = 250 - a - b * 1/Math.SQRT2 + d * 1/Math.SQRT2;
+               return result;
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               var ctx = canvas.getContext('2d');
+               clear(ctx);
+               //ctx.fillStyle = "rgba(255,255,255,0.1)";
+               for (var j = 0; j < polygons.length; j++) {
+                   drawPolygon(polygons[j], ctx);
+               }
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>The Product of Two Pentagons</h1>   
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p> The product of two pentagons, doubly rotating in ℝ⁴, its natural habitat.
+            </p>
+	        <div id="footer">
+		       © Michael Batty, July 2012
+	        </div>
+        </div>
+     </body>  
+ </html>   

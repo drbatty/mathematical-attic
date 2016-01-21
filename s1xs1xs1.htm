@@ -1,0 +1,159 @@
+﻿
+<html>  
+   <head>
+      <title>A Flat Three-Torus</title>  
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+       <script type="application/javascript">
+
+           var numberOfPoints = 2000;
+           var spherePoints = new Array();
+           var abAngle = Math.PI / 100;
+           var cdAngle = Math.PI / 200;
+           var efAngle = Math.PI / 150;
+           var isomAngle = Math.PI / 6;
+
+           var radius = 70;
+
+           var timeoutTime = 20;
+
+           var T1a = Math.cos(abAngle);
+           var T1b = -1 * Math.sin(abAngle);
+           var T1c = 0;
+           var T1d = 0;
+           var T1e = 0;
+           var T1f = 0;
+
+           var T2a = Math.sin(abAngle);
+           var T2b = Math.cos(abAngle);
+           var T2c = 0;
+           var T2d = 0;
+           var T2e = 0;
+           var T2f = 0;
+
+           var T3a = 0;
+           var T3b = 0;
+           var T3c = Math.cos(cdAngle);
+           var T3d = -1 * Math.sin(cdAngle);
+           var T3e = 0;
+           var T3f = 0;
+
+           var T4a = 0;
+           var T4b = 0;
+           var T4c = Math.sin(cdAngle);
+           var T4d = Math.cos(cdAngle);
+           var T4e = 0;
+           var T4f = 0;
+
+           var T5a = 0;
+           var T5b = 0;
+           var T5c = 0;
+           var T5d = 0;
+           var T5e = Math.cos(efAngle);
+           var T5f = -1 * Math.sin(efAngle);
+
+           var T6a = 0;
+           var T6b = 0;
+           var T6c = 0;
+           var T6d = 0;
+           var T6e = Math.sin(efAngle);
+           var T6f = Math.cos(efAngle);
+
+           for (var i = 0; i < numberOfPoints; i++) {
+               var theta1 = Math.random() * 2 * Math.PI;
+               var theta2 = Math.random() * 2 * Math.PI;
+               var theta3 = Math.random() * 2 * Math.PI;
+              
+               var point = {};
+               point["a"] = radius * Math.sin(theta1);
+               point["b"] = radius * Math.cos(theta1);
+               point["c"] = radius * Math.sin(theta2);
+               point["d"] = radius * Math.cos(theta2);
+               point["e"] = radius * Math.sin(theta3);
+               point["f"] = radius * Math.cos(theta3);
+
+               spherePoints.push(point);
+           }
+
+           function transform() {
+               var newSpherePoints = new Array();
+               for (var i = 0; i < spherePoints.length; i++) {
+                   var point = spherePoints[i];
+                   var newPoint = {};
+                   newPoint["a"] = T1a * point["a"] + T1b * point["b"] + T1c * point["c"] + T1d * point["d"] + T1e * point["e"] + T1f * point["f"];
+                   newPoint["b"] = T2a * point["a"] + T2b * point["b"] + T2c * point["c"] + T2d * point["d"] + T2e * point["e"] + T2f * point["f"];
+                   newPoint["c"] = T3a * point["a"] + T3b * point["b"] + T3c * point["c"] + T3d * point["d"] + T3e * point["e"] + T3f * point["f"];
+                   newPoint["d"] = T4a * point["a"] + T4b * point["b"] + T4c * point["c"] + T4d * point["d"] + T4e * point["e"] + T4f * point["f"];
+                   newPoint["e"] = T5a * point["a"] + T5b * point["b"] + T5c * point["c"] + T5d * point["d"] + T5e * point["e"] + T5f * point["f"];
+                   newPoint["f"] = T6a * point["a"] + T6b * point["b"] + T6c * point["c"] + T6d * point["d"] + T6e * point["e"] + T6f * point["f"];
+                   newSpherePoints.push(newPoint);
+               }
+               spherePoints = newSpherePoints;
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               if (canvas.getContext) {
+                   var ctx = canvas.getContext("2d");
+                   ctx.fillStyle = "#000";
+                   ctx.fillRect(0, 0, 500, 500);
+                   ctx.fillStyle = "#FFF";
+                   for (var i = 0; i < spherePoints.length; i++) {
+                       var point = spherePoints[i];
+                       plot6d(point["a"], point["b"], point["c"], point["d"], point["e"], point["f"], ctx);
+                   }
+                   //alert(spherePoints.length);
+               }
+               else
+                   alert("a");
+           }
+
+           function plot(x, y, ctx) {
+               ctx.beginPath();
+               ctx.moveTo(x, y);
+               ctx.fillRect(x, y, 3, 3);
+               ctx.stroke();
+           }
+
+           function plot6d(a, b, c, d, e, f, ctx) {
+               var X = 250 + a * Math.sin(isomAngle * 0) + b * Math.sin(isomAngle * 1) + c * Math.sin(isomAngle * 2) + d * Math.sin(isomAngle * 3) + e * Math.sin(isomAngle * 4) + f * Math.sin(isomAngle * 5);
+               var Y = 250 + a * Math.cos(isomAngle * 0) + b * Math.cos(isomAngle * 1) + c * Math.cos(isomAngle * 2) + d * Math.cos(isomAngle * 3) + e * Math.cos(isomAngle * 4) + f * Math.cos(isomAngle * 5);
+               var red = "4";
+               if (a > 0)
+                   red = "F";
+               var green = "4";
+               if (c > 0)
+                   green = "F";
+               var blue = "4";
+               if (e > 0)
+                   blue = "F";
+               ctx.fillStyle = "#" + red + green + blue;
+               plot(X, Y, ctx);
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>A Flat Three-Torus</h1>
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p class="centre-text">
+            This is analogous to the <a href="flat torus.htm">flat torus</a> in four dimensions, but whereas that was a surface, this is a 3-manifold embedded in ℝ⁶
+            </p>
+	        <div id="footer">
+		       © Michael Batty, July 2012
+	        </div>
+        </div>
+     </body>  
+ </html>   

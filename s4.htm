@@ -1,0 +1,73 @@
+﻿<html>  
+   <head>
+      <title>S⁴</title>  
+      <link rel="stylesheet" type="text/css" href="interactive_geometry.css" />
+       <script language="javascript" src="manifolder/fiveDimensionalRotation.js"></script>
+       <script language="javascript" src="manifolder/parametrizedS4.js"></script>
+       <script language="javascript" src="manifolder/pointManifold.js"></script>
+       <script language="javascript" src="manifolder/plotter.js"></script>
+       <script type="application/javascript">
+
+           var numberOfPoints = 3333;
+           var spherePoints = new Array();
+           var abAngle = Math.PI / 110;
+           var cdAngle = Math.PI / 170;
+           var efAngle = Math.PI / 230;
+           var sPlotter = new plotter(2, false, 1);
+           //sPlotter.refresh = false;
+           var twopi = 2 * Math.PI;
+           var radius = 150;
+           var timeoutTime = 20;
+           var transf = new fiveDimensionalRotation(abAngle, cdAngle, false);
+           var s4 = new parametrizedS4(radius);
+           var s4Points = new pointManifold(numberOfPoints);
+           s4Points.createSpiral4Manifold(3,77,5,77, twopi, parametrizedS4.point);
+
+           function transform() {
+               s4Points.points = transf.transformManifold(s4Points);
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               sPlotter.draw5d(canvas, s4Points);
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+         <div id="container">
+	<div id="header">
+	    <h1>S⁴</h1>
+	</div>
+	<div id="content-container1">
+		<div id="content-container2">
+			<div id="section-navigation">
+			</div>
+			<div id="content">
+				<div id="canvas-container">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	            </div>
+				<p>
+                This is my favourite spiral drawing of the four-sphere, having tried many different parameters. Soon I will post an
+                interactive version where you can play with different spiral parameters.
+            </p>
+			</div>
+			<div id="aside">
+				
+			</div>
+			<div id="footer">
+				© Michael Batty, July 2012
+			</div>
+		</div>
+	</div>
+</div>
+     </body>  
+ </html>   

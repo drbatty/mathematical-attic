@@ -1,0 +1,93 @@
+﻿<html>  
+   <head>
+      <title>Möbius Transformations</title>  
+      <script language="javascript" src="complexNumber.js"></script>
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+      <script type="application/javascript">
+
+          var points = new Array();
+          var timeoutTime = 20;
+          var rotation = Math.PI / 100;
+          var a = new complexNumber(1, 0);
+          var b = new complexNumber(0.01, 0);
+          var c = new complexNumber(-0.01, 0);
+          var d = new complexNumber(1, 0);
+          var scale = 60;
+          for (var i = 0; i <= 60; i++) {
+              for (var j = 0; j <= 60; j++) {
+                  var point = {};
+                  point["x"] = [(i - 30)/60];
+                  point["y"] = [(j - 30)/60];
+                  points.push(point);
+              }
+          }
+
+          function transform() {
+              result = new Array();
+              for (var i = 0; i < points.length; i++) {
+                  var point = points[i];
+                  var z = new complexNumber(point["x"], point["y"]);
+                 // alert(z.x + " " + z.y);
+                  var wNum = a.multiply(z).add(b);
+                  var wDen = c.multiply(z).add(d);
+                  var newPoint = {};
+                  //w = wNum;
+                  w = wNum.divide(wDen);
+                  newPoint["x"] = w.x;
+                  newPoint["y"] = w.y;
+                  result.push(newPoint);
+              }
+              points = result;
+          }
+
+          function draw() {
+              var canvas = document.getElementById("canvas");
+              if (canvas.getContext) {
+                  var ctx = canvas.getContext("2d");
+                  ctx.fillStyle = "#000";
+                  ctx.fillRect(0, 0, 500, 500);
+                  ctx.fillStyle = "#FFF";
+                  //alert(points.length);
+                  for (var i = 0; i < points.length; i++) {
+                      var point = points[i];
+                      plot(point["x"], point["y"], ctx);
+                  }
+              }
+          }
+
+          function plot(x, y, ctx) {
+              ctx.beginPath();
+              ctx.moveTo(scale * x + 250, scale * y + 250);
+              ctx.fillRect(scale * x + 250, scale * y + 250, 4, 4);
+              ctx.stroke();
+          }
+
+          window.setTimeout(tick, timeoutTime);
+
+          function tick() {
+              transform();
+              draw();
+              window.setTimeout(tick, timeoutTime);
+          }
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>Möbius Transformations</h1>
+	        </div>
+	        <div id="centred-canvas">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p>
+            This an example of a linear fractional (Möbius) Transformation of the complex plane ℂ.
+            Such a transformation can be described by a 2-by-2 matrix of complex numbers. The transformation corresponds
+            to a rotation of the Riemann sphere if and only if the matrix is unitary. The above transformation comes from
+            slightly perturbing the identity matrix whilst preserving unitarity.
+            </p>
+	      <div id="footer">
+		       © Michael Batty, July 2012
+	      </div>
+        </div>
+     </body>  
+ </html>  

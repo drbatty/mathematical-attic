@@ -1,0 +1,86 @@
+﻿<html>  
+   <head>
+      <title>A Mathematical Jellyfish</title>  
+      <script language="javascript" src="manifolder/parametrizedSpunTorusKnot.js"></script>
+      <script language="javascript" src="manifolder/pointManifold.js"></script>
+      <script language="javascript" src="manifolder/fourDimensionalRotation.js"></script>
+      <script language="javascript" src="manifolder/plotter.js"></script>
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+       <script type="application/javascript">
+
+           var numberOfPoints = 2000;
+           var spherePoints = new Array();
+           var abAngle = Math.PI / 100;
+           var cdAngle = Math.PI / 240;
+           var radius = 30;
+           var windingNumber1 = 3;
+           var windingNumber2 = 2;
+           var jAdust = 1;
+           var iAdjust = 3;
+           var pointSize = 2;
+           var timeoutTime = 20;
+           var twopi = 2 * Math.PI;
+           var interleave = true;
+           var discreteLight = false;
+           var clearScreen = true;
+           var drawn = false;
+           var alpha = 0.5;
+
+           var transf = new fourDimensionalRotation(abAngle, cdAngle, interleave);
+           var knot = new parametrizedSpunTorusKnot(radius, windingNumber1, windingNumber2);
+           var knotPoints = new pointManifold(numberOfPoints);
+           var s3Plotter = new plotter(pointSize, discreteLight, alpha);
+
+           var sqrtPoints = Math.sqrt(numberOfPoints);
+           knotPoints.createRegularSurface(0, twopi, 0, twopi, parametrizedSpunTorusKnot.prototype.point, iAdjust, jAdust);
+
+           function transform() {
+               knotPoints.points = transf.transformManifold(knotPoints);
+           }
+
+           function clear(ctx) {
+               ctx.fillStyle = "#000";
+               ctx.fillRect(0, 0, 500, 500);
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               if (canvas.getContext) {
+                   var ctx = canvas.getContext("2d");
+                   if (clearScreen || !drawn) {
+                       clear(ctx);
+                       drawn = true;
+                   }
+                   ctx.fillStyle = "#FFF";
+                   s3Plotter.plot4DManifold(knotPoints, ctx);
+               }
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>A Mathematical Jellyfish</h1>
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p>
+            Just as a circle can be knotted in ℝ³, a (2-dimensional) sphere can be knotted in ℝ⁴. This is a spun trefoil, which is probably one of the simplest examples, obtained by spinning a knotted circle around an axis in the fourth dimension. 
+            And it looks a bit like a jellyfish. 
+	        </p>
+            <div id="footer">
+		       © Michael Batty, July 2012
+	        </div>
+        </div>
+     </body>  
+ </html>   

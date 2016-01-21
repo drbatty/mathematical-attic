@@ -1,0 +1,69 @@
+﻿<html>  
+   <head>
+      <title>Spherical Hypercone Spirals</title>  
+      <link rel="stylesheet" type="text/css" href="interactive_geometry.css" />
+      <script language="javascript" src="manifolder/fourDimensionalRotation.js"></script>
+      <script language="javascript" src="manifolder/plotter.js"></script>
+      <script language="javascript" src="manifolder/pointManifold.js"></script>
+      <script language="javascript" src="manifolder/polarHypercone.js"></script>
+       <script type="application/javascript">
+           var twopi = 2 * Math.PI;
+           var numberOfPoints = 1100;
+           var spherePoints = new Array();
+           var angle = Math.PI / 100;
+           var radius = 40;
+           var inversionConstant = -1;
+           var coneMultiplier = 1;
+           var transf = new fourDimensionalRotation(angle, angle, false);
+           var discreteLight = false;
+           var sPlotter = new plotter(2, discreteLight, 1);
+           sPlotter.refresh = true;
+           var s2Points = new pointManifold(numberOfPoints);
+           s2Points.sizeMult = 2;
+           s2Points.includeNegative = true;
+           s2Points.createSpiral3Manifold(1, 4, 17, 2 * Math.PI, polarHypercone.point);
+
+           var timeoutTime = 30;
+
+           function transform() {
+               s2Points.points = transf.transformManifold(s2Points);
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               sPlotter.draw4d(document.getElementById("canvas"), s2Points);
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="sPlotter.draw3d(document.getElementById('canvas'), s2Points.points);">  
+          <div id="header">
+	    <h1>Spherical Hypercone Spirals</h1>
+	</div>
+	<div id="content-container1">
+		<div id="content-container2">
+			<div id="section-navigation">
+			</div>
+			<div id="content">
+				<div id="canvas-container">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	            </div>
+                   <p> This is a spherical hypercone rotating in 4D. A hypercone is the analogue of a cone in 3D, with spherical cross-sections
+            instead of circular ones. It has been drawn using a spiral parametrization via polar co-ordinates. Another way to think
+            of the positive branch of a spherical hypercone is the geometric shape traced out by the wavefront of a sound wave over time. (The one in the picture
+            is a mathematical cone, with two branches.)
+            </p>
+			</div>
+         
+			<div id="aside">
+			</div>
+			<div id="footer">
+				© Michael Batty, July 2012
+			</div>
+		</div>
+	</div>
+     </body>  
+ </html>   

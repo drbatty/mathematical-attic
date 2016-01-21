@@ -1,0 +1,72 @@
+﻿<html>  
+   <head>
+      <title>S⁵pirals</title>  
+      <link rel="stylesheet" type="text/css" href="interactive_geometry.css" />
+       <script language="javascript" src="manifolder/sixDimensionalRotation.js"></script>
+       <script language="javascript" src="manifolder/parametrizedS5.js"></script>
+       <script language="javascript" src="manifolder/pointManifold.js"></script>
+       <script language="javascript" src="manifolder/plotter.js"></script>
+       <script type="application/javascript">
+
+           var numberOfPoints = 3333;
+           var spherePoints = new Array();
+           var abAngle = Math.PI / 110;
+           var cdAngle = Math.PI / 170;
+           var efAngle = Math.PI / 230;
+           var sPlotter = new plotter(2, false, 0.5);
+           var twopi = 2 * Math.PI;
+           var radius = 140;
+           var timeoutTime = 20;
+           var transf = new sixDimensionalRotation(abAngle, cdAngle, efAngle);
+           var s5 = new parametrizedS5(radius);
+           var s5Points = new pointManifold(numberOfPoints);
+           s5Points.createSpiral5Manifold(7,17,33,77,93, twopi, parametrizedS5.point);
+
+           function transform() {
+               s5Points.points = transf.transformManifold(s5Points);
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               sPlotter.draw6d(canvas, s5Points);
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+         <div id="container">
+	<div id="header">
+	    <h1>S⁵pirals</h1>
+	</div>
+	<div id="content-container1">
+		<div id="content-container2">
+			<div id="section-navigation">
+			</div>
+			<div id="content">
+				<div id="canvas-container">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	            </div>
+				<p>
+                Projection of lines in the 5-torus via spherical polar parametrisation. Things are getting more and more bunched up, making the central circle
+                and its fibres more and more pronounced, whilst the rest of the sphere becomes the dark side of the moon. The roundedness of the five-sphere is difficult to discern. It looks more
+                like two krakens having a fight somewhere in a 6D ocean.
+            </p>
+			</div>
+			<div id="aside">
+			</div>
+			<div id="footer">
+				© Michael Batty, July 2012
+			</div>
+		</div>
+	</div>
+</div>
+     </body>  
+ </html>   

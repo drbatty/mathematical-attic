@@ -1,0 +1,85 @@
+﻿<html>  
+   <head>
+      <title>4D Spiders' Web</title>  
+      <script language="javascript" src="manifolder/parametrizedSpunTorusKnot.js"></script>
+      <script language="javascript" src="manifolder/pointManifold.js"></script>
+      <script language="javascript" src="manifolder/fourDimensionalRotation.js"></script>
+      <script language="javascript" src="manifolder/plotter.js"></script>
+      <link rel="stylesheet" type="text/css" href="talk.css" />
+       <script type="application/javascript">
+
+           var numberOfPoints = 100;
+           var spherePoints = new Array();
+           var abAngle = Math.PI / 100;
+           var cdAngle = Math.PI / 240;
+           var radius = 60;
+           var windingNumber1 = 7;
+           var windingNumber2 = 5;
+           var jAdust = 1;
+           var iAdjust = 3;
+           var pointSize = 1;
+           var timeoutTime = 20;
+           var twopi = 2 * Math.PI;
+           var interleave = true;
+           var discreteLight = false;
+           var clearScreen = false;
+           var drawn = false;
+           var alpha = 0.1;
+
+           var transf = new fourDimensionalRotation(abAngle, cdAngle, interleave);
+           var knot = new parametrizedSpunTorusKnot(radius, windingNumber1, windingNumber2);
+           var knotPoints = new pointManifold(numberOfPoints);
+           var s3Plotter = new plotter(pointSize, discreteLight, alpha);
+
+           var sqrtPoints = Math.sqrt(numberOfPoints);
+           knotPoints.createRegularSurface(0, twopi, 0, twopi, parametrizedSpunTorusKnot.prototype.point, iAdjust, jAdust);
+
+           function transform() {
+               knotPoints.points = transf.transformManifold(knotPoints);
+           }
+
+           function clear(ctx) {
+               ctx.fillStyle = "#000";
+               ctx.fillRect(0, 0, 500, 500);
+           }
+
+           function draw() {
+               var canvas = document.getElementById("canvas");
+               if (canvas.getContext) {
+                   var ctx = canvas.getContext("2d");
+                   if (clearScreen || !drawn) {
+                       clear(ctx);
+                       drawn = true;
+                   }
+                   ctx.fillStyle = "#FFF";
+                   s3Plotter.plot4DManifold(knotPoints, ctx);
+               }
+           }
+
+           window.setTimeout(tick, timeoutTime);
+
+           function tick() {
+               transform();
+               draw();
+               window.setTimeout(tick, timeoutTime);
+           }
+
+      </script>  
+     </head>  
+     <body onload="draw();">  
+        <div id="container">
+	        <div id="header">
+		        <h1>4D Spiders' Web</h1>
+	        </div>
+	        <div id="hypersphere">
+		        <canvas id="canvas" width="500" height="500"></canvas>  
+	        </div>
+            <p> A 4D web spun by a team of 100 4D spiders. (Produced by rotating random points on a spun torus knot without clearing the screen,
+            and with a low alpha blend value. 
+            These appear as many superimposed hypocycloid curves, like a Spirograph makes.)</p>
+	        <div id="footer">
+		       © Michael Batty, July 2012
+	        </div>
+        </div>
+     </body>  
+ </html>   

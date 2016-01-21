@@ -1,0 +1,159 @@
+﻿body
+{
+    background: #000;
+    font-family: Sans-Serif;
+}
+
+#container
+{
+	margin: 0 auto;
+	width: 100%;
+	background: #000;
+	color: #fff;
+}
+
+#header
+{
+	background: #000;
+	color:#555;
+	padding: 20px;
+	text-align: center;
+}
+
+#header h1 { margin: 0; }
+
+a
+{
+    text-decoration: none;
+    color:#555;
+}
+
+a:hover
+{
+    color:red;
+} 
+
+#navigation
+{
+	float: left;
+	width: 100%;
+	background: #333;
+}
+
+#navigation ul
+{
+	margin: 0;
+	padding: 0;
+}
+
+#navigation ul li
+{
+	list-style-type: none;
+	display: inline;
+}
+
+#navigation li a
+{
+	display: block;
+	float: left;
+	padding: 5px 10px;
+	color: #fff;
+	text-decoration: none;
+	border-right: 1px solid #fff;
+}
+
+#navigation li a:hover { background: #383; }
+
+#content-container1
+{
+	float: left;
+	width: 100%;
+	background: #000;
+}
+
+#content-container2
+{
+	float: left;
+	width: 100%;
+	background: url(/wp-content/uploads/layout-three-liquid-background2.gif) repeat-y 80% 0;
+}
+
+#section-navigation
+{
+	float: left;
+	width: 25%;
+	padding: 20px 0;
+	margin: 0 2%;
+	display: inline;
+	color:#555;
+}
+
+#section-navigation ul
+{
+	margin: 0;
+	padding: 0;
+}
+
+#section-navigation ul li
+{
+	margin: 0 0 1em;
+	padding: 0;
+	list-style-type: none;
+}
+
+#content
+{
+	float: left;
+	width: 40%;
+	padding: 20px 0;
+	margin: 0 0 0 2%;
+	color:#555;
+	text-align:center;
+}
+
+#content h2 { margin: 0; }
+
+#aside
+{
+	float: right;
+	width: 25%;
+	padding: 20px 0;
+	margin: 0 2% 0 0;
+	display: inline;
+	color:#555;
+}
+
+#aside h3 { margin: 0; }
+
+#footer
+{
+	clear: both;
+	background: #000;
+	color: #666;
+	text-align: center;
+	padding: 20px;
+	height: 1%;
+	font-size: 10px;
+}
+
+#canvas-container
+{
+     width: 500px;
+     height:500px;
+     margin: 0px auto;
+}
+
+.input-number
+{
+    background-color: #000;
+    border:0; 
+    color:#888;
+}
+
+.number-polygon-points
+{
+    border:0; 
+    color:#888; 
+    background-color:#111; 
+    font-weight:bold;
+}

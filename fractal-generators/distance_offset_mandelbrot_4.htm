@@ -1,0 +1,144 @@
+﻿<html>  
+   <head>
+      <title></title>  
+      <script language="javascript" src="../lib/mb/maths/complexNumber.js"></script>
+      <link rel="stylesheet" type="text/css" href="../css/interactive_geometry_large.css" />
+      <script type="application/javascript">
+          var timeoutTime = 20;
+          var scale = 250;
+          var miniters = 0;
+          var iters = miniters;
+          var rmax = 2000;
+          var rmin = 10;
+          var maxiters = 300;
+          var centreX = -550;
+          var centreY = -400;
+          var canvasWidth = 800;
+          var zoomX = null;
+          var zoomY = null;
+          var zoomWidth = null;
+          var zoomHeight = null;
+          var redraw = false;
+          var redMultiplier = 20;
+          var blueMultiplier = 17;
+          var greenMultiplier = 12;
+          var iterIncrement = 1;
+          var offset = new complexNumber(0, 0.1);
+
+          function init() {
+              draw();
+              var canvas = document.getElementById("canvas");
+              if (canvas) {
+                  canvas.addEventListener('mousedown', function (evt) {
+                      var mousePos = getMousePos(evt, canvas);
+                      zoomX = mousePos.x;
+                      zoomY = mousePos.y;
+                      zoomWidth = 10;
+                      zoomHeight = 10;
+                  }, false);
+
+                  canvas.addEventListener('mousemove', function (evt) {
+                      var mousePos = getMousePos(evt, canvas);
+                      var width = mousePos.x - zoomX;
+                      var height = width;
+                      if (width >= 1 && height >= 1) {
+                          zoomWidth = width;
+                          zoomHeight = height;
+                      }
+                  }, false);
+
+                  canvas.addEventListener('mouseup', function (evt) {
+                      scale = scale * (canvasWidth / zoomWidth);
+                      centreX = (centreX + zoomX) * (canvasWidth / zoomWidth);
+                      centreY = (centreY + zoomY) * (canvasWidth / zoomWidth);
+                      zoomX = null;
+                      zoomY = null;
+                      zoomWidth = null;
+                      zoomHeight = null;
+                      iters = miniters;
+                      redraw = true;
+                  }, false);
+              }
+          }
+
+          function drawZoomBox() {
+              var canvas = document.getElementById("canvas");
+              if (canvas.getContext) {
+                  var ctx = canvas.getContext("2d");
+                  if (zoomX != null && zoomY != null) {
+                      ctx.fillStyle = "rgba(255,0,0,0.3)";
+                      ctx.fillRect(zoomX, zoomY, zoomWidth, zoomHeight);
+                  }
+              }
+          }
+
+          function getMousePos(evt, canvas) {
+              var obj = canvas;
+              var top = 0;
+              var left = 0;
+              while (obj && obj.tagName != 'BODY') {
+                  top += obj.offsetTop;
+                  left += obj.offsetLeft;
+                  obj = obj.offsetParent;
+              }
+              // return relative mouse position
+              var mouseX = evt.clientX - left + window.pageXOffset;
+              var mouseY = evt.clientY - top + window.pageYOffset;
+              return {
+                  x: mouseX,
+                  y: mouseY
+              };
+          }
+
+          function draw() {
+              var canvas = document.getElementById("canvas");
+              if (canvas.getContext) {
+                  var ctx = canvas.getContext("2d");
+                  if (redraw) {
+                      ctx.fillStyle = "#000";
+                      ctx.fillRect(0, 0, canvasWidth, canvasWidth);
+                      redraw = false;
+                  }
+                  ctx.fillStyle = "#FFF";
+                  for (var x = 0; x < canvasWidth; x++)
+                      for (var y = 0; y < canvasWidth; y++) {
+                          var c = new complexNumber((x + centreX) / scale, (y + centreY) / scale);
+                          var z = c;
+                          for (var i = 0; i < iters; i++)
+                              var z = z.multiply(z).add(c).add(offset);
+                          if (z.x * z.x + z.y * z.y < rmax && z.x * z.x + z.y * z.y > rmin) {
+                             ctx.fillStyle = "rgba(" + (iters * redMultiplier) % 256 + "," + (iters * greenMultiplier) % 256 + "," + (iters * blueMultiplier) % 256 + ",0.5)";
+                             ctx.fillRect(x, y, 1, 1);
+                          }
+                      }
+              }
+          }
+
+
+
+          window.setTimeout(tick, timeoutTime);
+
+          function tick() {
+              drawZoomBox();
+              if (iters < maxiters) {
+                  iters += iterIncrement;
+                  draw();
+              }
+              window.setTimeout(tick, timeoutTime);
+
+          }
+      </script>  
+     </head>  
+     <body onload="init();">  
+        <div id="container">
+	        <div id="header">
+		        <h1></h1>
+	        </div>
+	        <div id="canvas-container">
+		        <canvas id="canvas" width="800" height="800"></canvas>  
+	        </div>
+            <p>
+            </p>
+        </div>
+     </body>  
+ </html>  
